@@ -34,11 +34,12 @@ https://cdsarc.cds.unistra.fr/ftp/VI/42/
 https://iopscience.iop.org/article/10.1086/132034/pdf
 
    For determining the constellation in which a given RA/dec falls,  we
-only need a set of "horizontal" (east/west) boundary lines. Each such
-line is stored twice (once for the constellation to the north, once for
-the constellation to the south).  We only keep the former.  Determining
-which constellation we're in requires us to look north of our desired
-point until we hit a boundary.  Put more algorithmically,  we :
+only need a set of "horizontal" (east/west) boundary lines;  we can
+ignore the north/south ones.  Each east/west line is stored twice (once
+for the constellation to the north, once for the constellation to the
+south).  We only keep the former.  Determining which constellation we're
+in then requires us to look north of our desired point until we hit a
+boundary.  Put more algorithmically,  we :
 
 (1) Binary-search the list to find the border segment to the north of
 the given SPD.
@@ -64,32 +65,37 @@ Consider the following (imaginary) constellation Joe :
                    |
   ---A--------B    |
      |        |    |
-     H        C----D--E----
-     |                |
-     |   Joe          |
-     |                |
- ----F-------+--------G----+
+  H--I        C----D--E----
+  |                   |
+  |      Joe          |
+  |                   |
+--G----------+--------F----+
              |             |
    Alice     |    Bob
 
-   For this constellation,  we would extract segments AB, CD,  and DE.
-(The horizontal segments F+ and +G would be applied to constellations
-Alice and Bob.)  CD and DE can be combined to make a single segment.
+   For this constellation,  we would extract segments AB, CD,  DE,  and
+HI.  (The horizontal segments F+ and +G would be applied to constellations
+Alice and Bob.)  CD and DE can be combined to make a single CE segment.
 
-   Less obviously,  CD can be extended over to H;  i.e.,  if you're to
-the south of HE,  you are within Joe.  This extension isn't necessary,
-but (slightly) reduces the time required to get an identification.
+   Less obviously,  CE can be extended over to I,  then combined with
+HI; i.e.,  if HE is the first segment north of you,  you are within
+Joe.  This extension isn't necessary, but (slightly) reduces the time
+required to get an identification if you're south of IC -- you go up to
+that segment instead of continuing to search up to AB -- and,  because
+three segments are combined into one,  we save a bit of memory.  So the
+only segments actually saved for Joe are AB and HE.  (We actually end up
+with 324 segments,  or a bit under four segments/constellation on average.)
 
    Next,  there is the problem of memory-efficient storage.  The borders
 all have SPDs that fall on integer arcminutes and RAs that fall on
-integer RA seconds.  Thus,  the SPD of a segment can fit in 14 bits and
-the western (minimum) RA in 17 bits;  we can put both into a 32-bit
-integer.  The difference between the east RA and western RA for a segment
-can fit in a 16-bit integer.  As shown in 'conbound.c',  this lets us fit
-everything into seven bytes per segment.  That will almost uniformly be
-rounded up to eight bytes for alignment,  so the table requires 324*8 =
-2592 bytes.  We could probably do even better,  but the code would get
-much uglier.    */
+integer RA seconds in the B1875 frame.  Thus,  the SPD of a segment can
+fit in 14 bits and the western (minimum) RA in 17 bits;  we can put both
+into a 32-bit integer.  The difference between the east RA and western RA
+for a segment can fit in a 16-bit integer.  As shown in 'conbound.c',
+this lets us fit everything into seven bytes per segment.  That will
+almost uniformly be rounded up to eight bytes for alignment,  so the
+table requires 324*8 = 2592 bytes.  We could probably do even better,
+but the code would get much uglier.    */
 
 typedef struct
    {
