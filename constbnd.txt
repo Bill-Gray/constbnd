@@ -14,6 +14,12 @@ were assigned is given at
 
 https://www.newyorker.com/magazine/2017/05/01/the-irish-constellation
 
+   By 1930,  many stars had been given designation such as Beta Centauri,
+61 Cygni,  ZZ Ceti,  etc.  The IAU did their best to ensure that the
+already-named stars would land in the newly-designated constellations,
+which resulted in somewhat more complicated boundaries than might
+otherwise have been the case.
+
    These data can now be found on VizieR at
 
 http://cdsweb.u-strasbg.fr/viz-bin/ftp-index?VI/49
